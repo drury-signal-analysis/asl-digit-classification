@@ -12,13 +12,10 @@ BATCH_SIZE = 32
 LEARNING_RATE = 1e-4
 EPOCHS = 512
 
-NUM_IMAGES = 860
-TEST_TRAIN_SPLIT = 0.8
-
 transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(0.5, 0.5)])
 
 training_data, testing_data = random_split(
-    torchvision.datasets.ImageFolder(root='processed_combine_asl_dataset', transform=transform), (round(NUM_IMAGES * TEST_TRAIN_SPLIT), 6_000)
+    torchvision.datasets.ImageFolder(root='processed_combine_asl_dataset', transform=transform), (688, 172)
 )
 
 training_data_loader = DataLoader(training_data, batch_size=BATCH_SIZE, shuffle=True)
@@ -106,4 +103,4 @@ for epoch in range(EPOCHS):
 
 print('Done!')
 
-torch.jit.script(model).save('models/07.pt')
+torch.jit.script(model).save('models/01.pt')
