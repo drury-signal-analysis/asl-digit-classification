@@ -12,7 +12,7 @@ BATCH_SIZE = 32
 LEARNING_RATE = 1e-4
 EPOCHS = 512
 
-transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(0.5, 0.5)])
+transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(0.5, 0.5), transforms.Resize((300, 300))])
 
 training_data, testing_data = random_split(
     torchvision.datasets.ImageFolder(root='processed_combine_asl_dataset', transform=transform), (688, 172)
@@ -35,9 +35,11 @@ class ConvolutionalModel(nn.Module):
             nn.Conv2d(in_channels=20, out_channels=50, kernel_size=5, stride=1, padding=2),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
+            nn.Conv2d(in_channels=50, out_channels=20, kernel_size=5, stride=1, padding=2),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
             nn.Flatten(),
-            nn.Linear(50 * (IMAGE_SIZE // 2 // 2) ** 2, IMAGE_SIZE * IMAGE_SIZE),
-            nn.Linear(IMAGE_SIZE * IMAGE_SIZE, 10),
+            nn.Linear(27380, 10),
             nn.LogSoftmax(dim=1),
         )
 
