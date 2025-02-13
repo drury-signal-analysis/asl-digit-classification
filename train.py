@@ -1,24 +1,33 @@
 import torch
-from torch.utils.data import random_split
 from torch.utils.data import DataLoader
 from torch.backends import mps
 from torch import nn
 import torchvision
 from torchvision import transforms
+from torch.utils.data import random_split
 
-IMAGE_SIZE = 400
+PARTITION = 0.8
 MOMENTUM = 0.9
-BATCH_SIZE = 32
-LEARNING_RATE = 1e-4
-EPOCHS = 512
+BATCH_SIZE = 64
+LEARNING_RATE = 1e-3
+EPOCHS = 32
 
 
+def subset_data(examples, partition) -> list:
+    example_len = len(examples)
+    train_size = int(example_len * partition)
 
-transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(0.5, 0.5), transforms.Resize((300, 300))])
+    train_data, test_data = random_split(examples, (train_size, example_len - train_size))
 
-training_data, testing_data = random_split(
-    torchvision.datasets.ImageFolder(root='processed_combine_asl_dataset', transform=transform), (688, 172)
-)
+    print(f'training on: {len(train_data)}, testing on: {len(test_data)}')
+
+    return train_data, test_data
+
+
+transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(0.5, 0.5)])
+
+full_dataset = torchvision.datasets.ImageFolder(root='images', transform=transform)
+training_data, testing_data = subset_data(full_dataset, PARTITION)
 
 training_data_loader = DataLoader(training_data, batch_size=BATCH_SIZE, shuffle=True)
 testing_data_loader = DataLoader(testing_data, batch_size=BATCH_SIZE, shuffle=True)
@@ -41,7 +50,7 @@ class ConvolutionalModel(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
             nn.Flatten(),
-            nn.Linear(27380, 10),
+            nn.Linear(50000, 10),
             nn.LogSoftmax(dim=1),
         )
 
