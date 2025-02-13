@@ -13,7 +13,7 @@ LEARNING_RATE = 1e-3
 EPOCHS = 32
 
 
-def subset_data(examples, partition) -> list:
+def subset_data(examples: torchvision.datasets.ImageFolder, partition: float) -> tuple[torch.utils.data.Subset, torch.utils.data.Subset]:
     example_len = len(examples)
     train_size = int(example_len * partition)
 
@@ -24,10 +24,13 @@ def subset_data(examples, partition) -> list:
     return train_data, test_data
 
 
+
+
 transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(0.5, 0.5)])
 
 full_dataset = torchvision.datasets.ImageFolder(root='images', transform=transform)
 training_data, testing_data = subset_data(full_dataset, PARTITION)
+
 
 training_data_loader = DataLoader(training_data, batch_size=BATCH_SIZE, shuffle=True)
 testing_data_loader = DataLoader(testing_data, batch_size=BATCH_SIZE, shuffle=True)
@@ -63,7 +66,7 @@ criterion = nn.NLLLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=MOMENTUM)
 
 
-def train(data_loader, model, loss_fn, optimizer):
+def train(data_loader: DataLoader, model: ConvolutionalModel, loss_fn: nn.NLLLoss, optimizer: torch.optim.SGD) -> None:
     model.train()
 
     size = len(data_loader.dataset)
@@ -82,7 +85,7 @@ def train(data_loader, model, loss_fn, optimizer):
         print(f'loss: {loss.item():>7f}  [{(batch + 1) * len(images):>5d}/{size}]')
 
 
-def test(data_loader, model, loss_fn):
+def test(data_loader: DataLoader, model: ConvolutionalModel, loss_fn: nn.NLLLoss) -> None:
     model.eval()
 
     test_loss = 0
