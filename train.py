@@ -30,7 +30,6 @@ transform = transforms.Compose([transforms.ToTensor()])
 full_dataset = torchvision.datasets.ImageFolder(root='images', transform=transform)
 training_data, testing_data = subset_data(full_dataset, PARTITION)
 
-
 training_data_loader = DataLoader(training_data, batch_size=BATCH_SIZE, shuffle=True)
 testing_data_loader = DataLoader(testing_data, batch_size=BATCH_SIZE, shuffle=True)
 
