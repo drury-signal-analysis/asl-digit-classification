@@ -1,10 +1,11 @@
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
 from torch.backends import mps
 from torch import nn
 import torchvision
 from torchvision import transforms
 from torch.utils.data import random_split
+from typing import Any
 
 PARTITION = 0.8
 MOMENTUM = 0.9
@@ -13,7 +14,7 @@ LEARNING_RATE = 1e-3
 EPOCHS = 32
 
 
-def subset_data(examples: torchvision.datasets.ImageFolder, partition: float) -> tuple[torch.utils.data.Subset, torch.utils.data.Subset]:
+def subset_data(examples: torchvision.datasets.ImageFolder, partition: float) -> tuple[Subset[Any], Subset[Any]]:
     example_len = len(examples)
     train_size = int(example_len * partition)
 
@@ -24,9 +25,7 @@ def subset_data(examples: torchvision.datasets.ImageFolder, partition: float) ->
     return train_data, test_data
 
 
-
-
-transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(0.5, 0.5)])
+transform = transforms.Compose([transforms.ToTensor()])
 
 full_dataset = torchvision.datasets.ImageFolder(root='images', transform=transform)
 training_data, testing_data = subset_data(full_dataset, PARTITION)
@@ -82,7 +81,7 @@ def train(data_loader: DataLoader, model: ConvolutionalModel, loss_fn: nn.NLLLos
         optimizer.step()
         optimizer.zero_grad()
 
-        print(f'loss: {loss.item():>7f}  [{(batch + 1) * len(images):>5d}/{size}]')
+        print(f'loss: {loss.item():>7f}  [{batch * BATCH_SIZE:>5d}/{size}]')
 
 
 def test(data_loader: DataLoader, model: ConvolutionalModel, loss_fn: nn.NLLLoss) -> None:
