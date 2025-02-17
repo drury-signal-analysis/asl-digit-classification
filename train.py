@@ -19,7 +19,6 @@ def subset_data(examples: torchvision.datasets.ImageFolder, partition: float) ->
     train_size = int(example_len * partition)
 
     train_data, test_data = random_split(examples, (train_size, example_len - train_size))
-
     print(f'training on: {len(train_data)}, testing on: {len(test_data)}')
 
     return train_data, test_data
@@ -51,7 +50,9 @@ class ConvolutionalModel(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
             nn.Flatten(),
-            nn.Linear(50000, 10),
+            nn.Linear(50000, 5000),
+            nn.ReLU(),
+            nn.Linear(5000, 10),
             nn.LogSoftmax(dim=1),
         )
 
@@ -105,16 +106,20 @@ def test(data_loader: DataLoader, model: ConvolutionalModel, loss_fn: nn.NLLLoss
     test_loss /= len(data_loader)
     correct /= len(data_loader.dataset)
 
-    print(f'Test Error: \n Accuracy: {(100 * correct):>0.1f}%, Avg loss: {test_loss:>8f} \n')
+    print(f'  accuracy: {(100 * correct):>0.1f}%, avg loss: {test_loss:>8f}\n')
 
 
-print(f'Training on {device}\n')
+print(f'training on {device}\n')
 
 for epoch in range(EPOCHS):
-    print(f'Epoch {epoch + 1}\n-------------------------------')
+    print(f'epoch {epoch + 1}\n-------------------------------')
     train(training_data_loader, model, criterion, optimizer)
+    print()
+    print('train Error:')
+    test(training_data_loader, model, criterion)
+    print('test Error:')
     test(testing_data_loader, model, criterion)
 
-print('Done!')
-
+print('exporting model...')
 torch.jit.script(model).save('models/01.pt')
+print('done!')
