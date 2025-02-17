@@ -40,9 +40,9 @@ class ConvolutionalModel(nn.Module):
         super(ConvolutionalModel, self).__init__()
 
         self.network = nn.Sequential(
-            nn.Conv2d(in_channels=3, out_channels=20, kernel_size=5, stride=1, padding=2),
+            nn.Conv2d(in_channels=3, out_channels=20, kernel_size=9, stride=1, padding=4),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
+            nn.MaxPool2d(kernel_size=4, stride=4, padding=0),
             nn.Conv2d(in_channels=20, out_channels=50, kernel_size=5, stride=1, padding=2),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
@@ -50,7 +50,7 @@ class ConvolutionalModel(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
             nn.Flatten(),
-            nn.Linear(50000, 5000),
+            nn.Linear(12500, 5000),
             nn.ReLU(),
             nn.Linear(5000, 10),
             nn.LogSoftmax(dim=1),
@@ -114,11 +114,12 @@ print(f'training on {device}\n')
 for epoch in range(EPOCHS):
     print(f'epoch {epoch + 1}\n-------------------------------')
     train(training_data_loader, model, criterion, optimizer)
-    print()
-    print('train Error:')
-    test(training_data_loader, model, criterion)
-    print('test Error:')
-    test(testing_data_loader, model, criterion)
+
+print()
+print('train Error:')
+test(training_data_loader, model, criterion)
+print('test Error:')
+test(testing_data_loader, model, criterion)
 
 print('exporting model...')
 torch.jit.script(model).save('models/01.pt')
