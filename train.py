@@ -116,9 +116,9 @@ for epoch in range(EPOCHS):
     train(training_data_loader, model, criterion, optimizer)
 
 print()
-print('train Error:')
+print('train error:')
 test(training_data_loader, model, criterion)
-print('test Error:')
+print('test error:')
 test(testing_data_loader, model, criterion)
 
 print('exporting model...')
