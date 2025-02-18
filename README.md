@@ -4,7 +4,7 @@ Used the MediaPipe framework to note key points in the hands gestures and then d
 
 ## Dataset
 
-[MediaPipe_Processed_ASL_Dataset](https://www.kaggle.com/datasets/vignonantoine/mediapipe-processed-asl-dataset)
+[American Sign Language Digit Dataset](https://www.kaggle.com/datasets/rayeed045/american-sign-language-digit-dataset)
 
 ## Model
 
